@@ -2,26 +2,24 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { HYDRATE } from "next-redux-wrapper";
 
-// const intialState = {
-//     cars: [],
-// }
-
-
-const api_urlData = "https://autodigg.com/ad-api/cars/list?usedCar=true&car_type=Used+car&page=1&radius=100&year=2011,2021&zip=&price_from=0&price_to=100000";
 
 export const fetchCardata = createAsyncThunk(
     "fetchData",
-    async () => {
-        console.log("fetchCardata");
-        const res = await axios.get(api_urlData)
-        return res;
+    async (filter, { getState }) => {
+        const state = getState();
+        const api_urlData = `https://autodigg.com/ad-api/cars/list?usedCar=true&car_type=${(filter.car_type && filter.car_type.length > 0) ? filter.car_type.join(",") : state.autodigg.car_type.join(',')}&page=${filter.page}&radius=100&year=2011,2021&zip=&price_from=0&price_to=100000`;
+        // console.log("fetchCardata", api_urlData);
+        const res1 = await axios.get(api_urlData)
+        const res2 = await axios.get(api_urlData + "&return=count");
+        return { cars: res1.data, count: res2.data.count };
     }
-
 )
 
 export const autodiggSlice = createSlice({
     name: "autodigg",
     initialState: {
+        isLoading: false,
+        page: 1,
         car_type: ["Used Car"],
         cars: [],
         count: 0,
@@ -37,7 +35,6 @@ export const autodiggSlice = createSlice({
     },
     reducers: {
         setCars: (state, action) => {
-            // console.log(action.payload, "slkd");
             state.cars = action.payload.cars
             state.count = action.payload.count
             state.body_type = action.payload.body_type
@@ -53,27 +50,19 @@ export const autodiggSlice = createSlice({
         }
     },
     extraReducers: {
-        [HYDRATE]: (state, action) => {
-            // console.log(action.payload, "hyd");
-            return { ...state, ...action.payload.autodigg };
 
-
+        [fetchCardata.pending]: (state, action) => {
+            state.isLoading = true;
         },
-
-        extraReducers: {
-
-            [fetchCardata.fulfilled]: (state, action) => {
-                console.log(action.payload, "heloo")
-                // state.cars = action.payload
-            },
-            // [fetchCardata.pending]: (state, action) => {
-            //     state.cars = "loading..."
-            // },
-            // [fetchCardata.rejected]: (state, action) => {
-            //     state.cars = "try again"
-            // },
-
-        }
+        [fetchCardata.fulfilled]: (state, action) => {
+            // console.log(action.payload, "heloo")
+            state.isLoading = false;
+            state.cars = action.payload.cars
+            state.count = action.payload.count
+        },
+        [fetchCardata.rejected]: (state, action) => {
+            state.isLoading = false;
+        },
     }
 });
 

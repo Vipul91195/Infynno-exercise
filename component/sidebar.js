@@ -5,12 +5,16 @@ import { useState } from "react";
 import "rc-slider/assets/index.css";
 import { Listbox, Transition } from "@headlessui/react";
 import { useSelector, useDispatch } from 'react-redux';
-import { setCars } from '../slice/slice';
+import { fetchCardata, setCars } from '../slice/slice';
 
-export default function Filter() {
+export default function Filter(filterData) {
+    // console.log(filterData.filterData.model)
     // const filterData = useSelector((state) => state.autodigg.make);
 
-    const { make, model, body_type, exterior_color, interior_color, transmission, drivetrain, fuel_type, features } = useSelector((state) => state.autodigg);
+    // const { make, model, body_type, exterior_color, interior_color, transmission, drivetrain, fuel_type, features } = useSelector((state) => state.autodigg);
+
+
+    const { make, model, body_type, exterior_color, interior_color, transmission, drivetrain, fuel_type, features } = filterData.filterData;
 
     const carData = useSelector((state) => state.autodigg);
     const dispatch = useDispatch();
@@ -72,12 +76,14 @@ export default function Filter() {
 
     const carhandler = (e) => {
         // console.log(e.target.value);
+        const c_type = carData.car_type.includes(e.target.value) ?
+            carData.car_type.filter(car_t => car_t !== e.target.value) :
+            [...carData.car_type, e.target.value];
 
+        dispatch(fetchCardata({ car_type: c_type, page: carData.page }));
         dispatch(setCars({
             ...carData,
-            car_type: carData.car_type.includes(e.target.value) ?
-                carData.car_type.filter(car_t => car_t !== e.target.value) :
-                [...carData.car_type, e.target.value]
+            car_type: c_type
         }));
     }
     return (
@@ -92,10 +98,11 @@ export default function Filter() {
                         <label className='text-[#8F90A6] not-italic font-semibold text-[12px] leading-[16px]'>CAR TYPE</label>
                     </div>
                     <div className='flex pl-[2px]'>
-                        <input className='w-[20px] h-[20px] border-2 rounded border-[#8F90A6] accent-black' checked={carData.car_type.includes("New Car")} onChange={carhandler} type="checkbox" id='new' value="New Car" name='new' />
-                        <label className='text-[#28293D] not-italic font-medium text-[14px] leading-[20px] ml-[10px]'>New</label>
-                        <input className='w-[20px] h-[20px] border-2 rounded border-[#8F90A6] accent-black   ml-[30px]' checked={carData.car_type.includes("Used Car")} onChange={carhandler} type="checkbox" id='used' value="Used Car" name='used' />
+                        <input className='w-[20px] h-[20px] border-2 rounded border-[#8F90A6] accent-black ' checked={carData.car_type.includes("Used Car")} onChange={carhandler} type="checkbox" id='used' value="Used Car" name='used' />
                         <label className='text-[#28293D] not-italic font-medium text-[14px] leading-[20px] ml-[10px]'>Used</label>
+                        <input className='w-[20px] h-[20px] border-2 rounded border-[#8F90A6] accent-black  ml-[30px]' checked={carData.car_type.includes("New Car")} onChange={carhandler} type="checkbox" id='new' value="New Car" name='new' />
+                        <label className='text-[#28293D] not-italic font-medium text-[14px] leading-[20px] ml-[10px]'>New</label>
+
                     </div>
                     <div className='w-[280px] h-[1px] rounded-[10px] bg-[#E4E4EB] mt-[4px] '></div>
                 </div>
@@ -648,7 +655,6 @@ export default function Filter() {
                 <div className='flex justify-center pl-[124px]'> <Image src="/V.png" alt="aa" width="10px" height="6.18px" /></div>
             </div> */}
         </div >
-
     )
 }
 
