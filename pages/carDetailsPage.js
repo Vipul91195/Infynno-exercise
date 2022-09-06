@@ -1,7 +1,7 @@
 import React from 'react'
-import Header from '../component/header'
+import Header from '../component/Header'
 import Image from 'next/image'
-import Footer from '../component/footer'
+import Footer from '../component/Footer'
 
 export default function CarDetails() {
     return (
