@@ -4,6 +4,7 @@ import Pagination from './Pagination'
 import { useSelector } from 'react-redux'
 
 
+
 export default function Card({ car_Data }) {
 
     const [carData, setCarData] = useState(car_Data.cars);

@@ -1,11 +1,12 @@
-import React from 'react'
-import Image from 'next/image'
-import Slider from "rc-slider"
+import React from 'react';
+import Image from 'next/image';
+import Slider from "rc-slider";
 import { useState } from "react";
 import "rc-slider/assets/index.css";
 import { Listbox, Transition } from "@headlessui/react";
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchCardata, setCars } from '../slice/slice';
+
 
 export default function Filter(filterData) {
     // console.log(filterData.filterData.model)

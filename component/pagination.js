@@ -1,8 +1,9 @@
-import React from 'react'
+import React from 'react';
 import ReactPaginate from 'react-paginate';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCardata } from '../slice/slice';
 import { global } from 'styled-jsx/css';
+
 
 
 export default function Pagination({ totalCount }) {
